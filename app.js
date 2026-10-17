@@ -49,8 +49,18 @@ async function stopMusic(){musicOn=false;clearInterval(musicTimer);if(audioConte
 el('sound').addEventListener('click',()=>{musicOn?stopMusic():startMusic();});
 el('enter').addEventListener('click',()=>{startMusic();section.scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth'});});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&musicOn)stopMusic();});
-if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(config.rsvpUrl)){el('preview').hidden=true;el('live').hidden=false;el('rsvp-frame').src=config.rsvpUrl;el('form-link').href=config.rsvpUrl;}
-el('preview').addEventListener('submit',event=>{event.preventDefault();const name=el('guest').value.trim();if(name.length<2){el('status').textContent='اكتبي اسمچ من حرفين على الأقل.';return;}el('status').textContent=`يا هلا ${name} ♡ هذه معاينة فقط؛ اسمچ ما انحفظ بعد.`;if(reducedMotion.matches)return;for(let i=0;i<40;i++){const p=document.createElement('i');p.className='confetti';p.style.left=`${Math.random()*100}%`;p.style.background=['#b798ce','#e8b8b3','#d2b577','#c8d3bb'][i%4];p.style.animationDelay=`${Math.random()*.6}s`;document.body.append(p);setTimeout(()=>p.remove(),4500);}});
+const form=el('preview');
+el('live').hidden=true;
+form.hidden=false;
+if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(config.rsvpUrl)){
+ form.action=config.rsvpUrl;form.method='post';form.target='_self';
+ el('preview-note').textContent='بعد القبول تظهر صفحة تأكيد حفظ اسمچ. الاسم محفوظ بجدول خاص لصاحبة الدعوة.';
+ const id=document.createElement('input');id.type='hidden';id.name='id';form.append(id);
+ let requestId='';try{requestId=sessionStorage.getItem('fifi-direct-request')||'';el('guest').value=sessionStorage.getItem('fifi-guest')||'';}catch(_){}
+ if(!requestId){requestId=crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)+'-fifi';}
+ id.value=requestId;
+ form.addEventListener('submit',event=>{const name=el('guest').value.trim();if(name.length<2){event.preventDefault();el('status').textContent='اكتبي اسمچ من حرفين على الأقل.';return;}el('guest').value=name;try{sessionStorage.setItem('fifi-direct-request',requestId);sessionStorage.setItem('fifi-guest',name);}catch(_){}el('status').textContent='جارٍ الانتقال لتأكيد الحفظ…';});
+}else{form.addEventListener('submit',event=>{event.preventDefault();el('status').textContent='تسجيل الحضور غير متاح حاليًا.';});}
 
 // Try immediately where permitted; otherwise unlock naturally on the first interaction.
 function firstInteraction(event){
@@ -61,3 +71,4 @@ function firstInteraction(event){
 document.addEventListener('pointerdown',firstInteraction,{passive:true});
 document.addEventListener('keydown',firstInteraction);
 startMusic(true);
+
