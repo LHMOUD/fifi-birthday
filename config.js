@@ -1,0 +1,1 @@
+window.INVITATION = { name: 'فيفي', date: '2026-10-19T16:00:00+03:00', timeZone: 'Asia/Baghdad', venue: 'مزرعة إيلا', rsvpUrl: 'https://script.google.com/macros/s/AKfycbwG-WwDKlhm7ccRxvDPZhl-znQXq2pW7BkLwybhojH6a2285jVklke7V151Udnhq9kq8Q/exec' };
